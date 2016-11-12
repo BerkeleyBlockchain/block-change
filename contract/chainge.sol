@@ -3,39 +3,56 @@ contract token {function transfer(address receiver, uint amount) { }}
 
 contract Chainge {
 
-  struct Share {
-    uint public costInEther,
-    address winner;
+  
+  Ballot[] ballots;
+
+  function Chainge() {
   }
 
-  struct Ballot {
+  function generateBallot(bytes32 name, bytes32 desc,bool isReturnable, uint principle, uint deadline) returns (Ballot){
+      Ballot b = new Ballot(name, desc, isReturnable, principle, deadline);
+      return b;
+  }
+ 
+
+}
+
+contract Ballot{
+  struct Share {
+    uint public costInEther,
+    address owner;
+  }
+
+
+
     bytes32 name,
     bytes32 desc,
     bool satisfied,
     Share[] shares,
-    uint jackpot;
-  }
-
-  mapping(address => uint256) public userSpace;
-  uint principle;
-  address initialInvestor;
-  uint public deadline;
-  Ballot ballot;
-
-  function Chainge(address _initialInvestor, uint _principle, uint _lengthInDays, bytes32 _name, bytes32 _desc) {
-    principle = _principle;
-    ballot.jackpot = _principle;
-    ballot.name = _name;
-    ballot.desc = _desc;
-    initialInvestor = _initialInvestor;
-    deadline = now + _lengthInDays * 1 days;
-  }
+    uint jackpot,
+    bool isReturnable;
+    mapping(address => uint256) public userSpace;
+    uint principle;
+    address initialInvestor;
+    uint public deadline;
 
   modifier ballotSatisfied() { if(!ballot.satisfied) _; }
-  modifier deadlinePassed() { if(now >= deadline) _; }
+  modifier pricipleMissed() { if(now >= deadline && jackpot < principle); }
 
-  function returnPrinciple() deadlinePassed {
-
+  function Ballot(bytes32 _name, bytes32 _desc,bool _isReturnable, uint _principle, uint _deadline){
+    name = _name;
+    desc = _desc;
+    isReturnable = _isReturnable;
+    principle = _principle;
+    deadline = _deadline;
+    jackpot = 0;
+    satisfied = false;
+  }
+  function returnPrinciple() principleMissed {
+    for(int i = 0; i <shares.length; i++) {
+      address user = shares[i].owner;
+      user.send(sha)
+    }
 
   }
 
@@ -49,5 +66,4 @@ contract Chainge {
   function() {
     throw;
   }
-
 }
