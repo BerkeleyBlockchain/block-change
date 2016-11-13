@@ -1,5 +1,25 @@
 pragma solidity ^0.4.4;
 
+contract contractGenerator {
+
+  uint contractCount = 0;
+  mapping(uint => BlockChange) public blockchangeIndex;
+
+  function contractGenerator(){}
+
+  function createNewBlockchange(
+        bytes32 _name,
+        bytes32 _desc,
+        uint _ratioOfTotalShareValueToJackpot,
+        uint _cycleLength,
+        uint _initWait
+    ) {
+      blockchangeIndex[contractCount++] = new BlockChange(_name, _desc,
+        _ratioOfTotalShareValueToJackpot, _cycleLength, _initWait);
+  }
+
+}
+
 contract BlockChange {
 
   address public owner;
@@ -63,7 +83,7 @@ contract BlockChange {
     if (shareholderToSharesOwned[msg.sender] == 0) {
       shareholderIndex[shareholderCount] = msg.sender;
       shareholderToSharesOwned[msg.sender] = orderSize;
-      shareholderCount += 1;
+      shareholderCount = shareholderCount + 1;
     } else {
       shareholderToSharesOwned[msg.sender] += orderSize;
     }
@@ -83,14 +103,14 @@ contract BlockChange {
           uint numShares = shareholderToSharesOwned[shareholderIndex[i]];
           shareholderToSharesOwned[shareholderIndex[i]] = 0;
           uint payment = numShares * jackpot / shareLimit;
-          shareholderIndex[i].send(payment);
+          var result = shareholderIndex[i].send(payment);
           jackpot -= payment;
         }
     }
 
     /* Leftover change goes to the creator of the contract */
     if (jackpot > 0) {
-      owner.send(jackpot);
+      bool result = owner.send(jackpot);
       jackpot = 0;
     }
 
