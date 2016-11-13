@@ -4,45 +4,52 @@ contract BlockChange {
 
   address public owner;
 
-  bytes32 name;
-  bytes32 desc;
-  uint jackpot;
-  uint sharesSold = 0;
-  uint cycleLength;
-  uint deadline;
-  uint initWait;
-  uint ratioToShares;
-  uint shareLimit = 1000;
-  bool satisfied = false;
+  bytes32 public name;
+  bytes32 public desc;
+  uint public jackpot;
+  uint public sharesSold = 0;
+  uint public cycleLength;
+  uint public deadline;
+  uint public initWait;
+  uint public ratioOfTotalShareValueToJackpot;
+  uint public shareLimit = 1000;
+  bool public satisfied = false;
 
-  uint shareholderCount = 0;
-  mapping(uint => address) public shareholderIndex;
+  uint public shareholderCount = 0;
+  mapping(uint => address) shareholderIndex;
   mapping(address => uint256) public shareholderToSharesOwned;
 
-  function BlockChange(bytes32 _name, bytes32 _desc, uint _ratioToShares, uint _cycleLength, uint _initWait){
+  function BlockChange(
+      bytes32 _name,
+      bytes32 _desc,
+      uint _ratioOfTotalShareValueToJackpot,
+      uint _cycleLength,
+      uint _initWait
+  ) {
     name = _name;
     desc = _desc;
     cycleLength = _cycleLength;
     deadline = now + cycleLength * 1 days;
     initWait = now + _initWait * 1 days;
-    ratioToShares = _ratioToShares;
+    ratioOfTotalShareValueToJackpot = _ratioOfTotalShareValueToJackpot;
   }
 
-  /* returns cost of share based on ratioToShares and jackpot */
+  /* returns the cost of each share based on ratioOfTotalShareValueToJackpot
+  and jackpot */
   function costOfShare() returns (uint) {
-    uint cost = jackpot * ratioToShares / (100 * shareLimit);
+    uint cost = jackpot * ratioOfTotalShareValueToJackpot / (100 * shareLimit);
     return cost;
   }
 
   modifier initialPeriod() { if (now >= initWait) _; }
 
   /* add money to initial amount */
-  function fundraise() initialPeriod {
+  function fundraise() initialPeriod payable {
     jackpot += msg.value;
   }
 
   /* purchase a share */
-  function purchase() require(now >= initWait) {
+  function purchase() require(now >= initWait) payable {
     uint cost = costOfShare();
     if (msg.value < cost) throw;
     uint orderSize = msg.value / cost;
