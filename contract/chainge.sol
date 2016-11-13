@@ -25,7 +25,7 @@ contract Chainge {
     deadline = now + cycleLength * 1 days;
     initWait = now + _initWait * 1 days;
     ratioToShares = _ratioToShares;
-    shares = new address[1000];
+    shares = new address[](1000);
   }
 
   // returns cost of share based on ratioToShares and jackpot
@@ -39,48 +39,44 @@ contract Chainge {
 
   // add money to initial amount
   function fundraise() initalPeriod {
-    require(msg.sender == owner);
     jackpot += msg.value;
   }
 
   // purchase a share
-  function purchase() {
-    require(now >= initWait);
+  function purchase() require(now >= initWait) {
     uint cost = costOfShare();
-    require(msg.value >= cost);
-    numShares = msg.value / cost;
+    if (msg.value < cost) throw;
+    uint numShares = msg.value / cost;
     if(numShares > (1000 - (curShareIndex + 1))) {
       numShares = (1000 - (curShareIndex + 1));
     }
-    for(int i = curShareIndex; i < numShares; i++) {
+    for(uint i = curShareIndex; i < numShares; i++) {
       shares[i] = msg.sender;
     }
     curShareIndex += numShares;
     sharesOwned[msg.sender] += numShares;
-    msg.sender.send(msg.value - (numShares * cost));
+    if(!msg.sender.send(msg.value - (numShares * cost))) throw;
     jackpot += msg.value - (numShares * cost);
   }
 
   // release all current shares
-  function releaseShares() cycleFinished {
-    require(now >= deadline);
+  function releaseShares() require(now >= deadline) {
     curShareIndex = 0;
     deadline = now + cycleLength * 1 days;
   }
 
-  function payOut() {
-    require(satisfied);
-    for(int i = 0; i < curShareIndex; i++) {
+  function payOut() require(satisfied) {
+    for(uint i = 0; i < curShareIndex; i++) {
         if(sharesOwned[shares[i]] > 0) {
           uint numShares = sharesOwned[shares[i]];
           sharesOwned[shares[i]] = 0;
           uint payment = numShares * jackpot / 1000;
-          shares[i].send(payment);
+          if(!shares[i].send(payment)) throw;
           jackpot -= payment;
         }
     }
     if(jackpot > 0) {
-      owner.send(jackpot);
+      if(!owner.send(jackpot)) throw;
       jackpot = 0;
     }
   }
