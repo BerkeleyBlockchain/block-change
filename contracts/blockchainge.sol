@@ -28,7 +28,7 @@ contract BlockChange {
     shares = new address[](1000);
   }
 
-  // returns cost of share based on ratioToShares and jackpot
+  /* returns cost of share based on ratioToShares and jackpot */
   function costOfShare() returns (uint) {
     uint cost = jackpot;
     cost = cost * ratioToShares / (100 * 1000);
@@ -37,12 +37,12 @@ contract BlockChange {
 
   modifier initalPeriod() { if(now >= initWait) _; }
 
-  // add money to initial amount
+  /* add money to initial amount */
   function fundraise() initalPeriod {
     jackpot += msg.value;
   }
 
-  // purchase a share
+  /* purchase a share */
   function purchase() require(now >= initWait) {
     uint cost = costOfShare();
     if (msg.value < cost) throw;
@@ -59,7 +59,7 @@ contract BlockChange {
     jackpot += msg.value - (numShares * cost);
   }
 
-  // release all current shares
+  /* release all current shares */
   function releaseShares() require(now >= deadline) {
     curShareIndex = 0;
     deadline = now + cycleLength * 1 days;
