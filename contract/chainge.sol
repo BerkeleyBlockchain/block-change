@@ -1,81 +1,92 @@
 pragma solidity ^0.4.2;
-contract token {function transfer(address receiver, uint amount) { }}
 
 contract Chainge {
-  Ballot[] ballots;
 
-  function Chainge() {
-  }
+  address public owner;
 
-  function generateBallot(bytes32 name, bytes32 desc,bool isReturnable, uint principle, uint deadline) returns (Ballot){
-      Ballot b = new Ballot(name, desc, isReturnable, principle, deadline);
-      return b;
-  }
-}
+  bytes32 name;
+  bytes32 desc;
+  uint jackpot;
+  address[] shares;
+  uint curShareIndex = 0;
+  uint cycleLength;
+  uint deadline;
+  uint initWait;
+  uint ratioToShares;
+  bool satisfied = false;
 
-contract Ballot {
 
-  struct Share {
-    uint public costInEther,
-    address owner,
-    uint expirationDate,
-    bool assigned;
-  }
+  mapping(address => uint256) public sharesOwned;
 
-    mapping(address => uint256) public sharesOwned;
-    bytes32 name,
-    bytes32 desc,
-    bool satisfied,
-    Share[] shares,
-    uint jackpot,
-    bool isReturnable;
-    uint principle;
-    address initialInvestor;
-    uint public deadline;
-
-  modifier ballotSatisfied() { if(!ballot.satisfied) _; }
-  modifier pricipleMissed() {
-    if(now >= deadline && jackpot <= principle && isReturnable) _;
-
-  }
-
-  function Ballot(bytes32 _name, bytes32 _desc,bool _isReturnable, uint _principle, uint _deadline){
+  function Chainge(bytes32 _name, bytes32 _desc, uint _ratioToShares, uint _cycleLength, uint _initWait){
     name = _name;
     desc = _desc;
-    isReturnable = _isReturnable;
-    principle = _principle;
-    deadline = _deadline;
-    jackpot = 0;
-    satisfied = false;
-    shares = new Share[principle];
+    cycleLength = _cycleLength;
+    deadline = now + cycleLength * 1 days;
+    initWait = now + _initWait * 1 days;
+    ratioToShares = _ratioToShares;
+    shares = new address[1000];
   }
 
-  function findAvailableShare() returns (Share) {
-    for(int i = 0; i < shares.length; i++) {
-      if(shares[i].assigned && shares[i].expirationDate >= now) {
-        shares[i].assigned = false;
-      }
-      if(!shares[i].assigned) {
-        return shares[i];
-      }
+  // returns cost of share based on ratioToShares and jackpot
+  function costOfShare() returns (uint) {
+    uint cost = jackpot;
+    cost = cost * ratioToShares / (100 * 1000);
+    return cost;
+  }
+
+  modifier initalPeriod() { if(now >= initWait) _; }
+
+  // add money to initial amount
+  function fundraise() initalPeriod {
+    require(msg.sender == owner);
+    jackpot += msg.value;
+  }
+
+  // purchase a share
+  function purchase() {
+    require(now >= initWait);
+    uint cost = costOfShare();
+    require(msg.value >= cost);
+    numShares = msg.value / cost;
+    if(numShares > (1000 - (curShareIndex + 1))) {
+      numShares = (1000 - (curShareIndex + 1));
+    }
+    for(int i = curShareIndex; i < numShares; i++) {
+      shares[i] = msg.sender;
+    }
+    curShareIndex += numShares;
+    sharesOwned[msg.sender] += numShares;
+    msg.sender.send(msg.value - (numShares * cost));
+    jackpot += msg.value - (numShares * cost);
+  }
+
+  // release all current shares
+  function releaseShares() cycleFinished {
+    require(now >= deadline);
+    curShareIndex = 0;
+    deadline = now + cycleLength * 1 days;
+  }
+
+  function payOut() {
+    require(satisfied);
+    for(int i = 0; i < curShareIndex; i++) {
+        if(sharesOwned[shares[i]] > 0) {
+          uint numShares = sharesOwned[shares[i]];
+          sharesOwned[shares[i]] = 0;
+          uint payment = numShares * jackpot / 1000;
+          shares[i].send(payment);
+          jackpot -= payment;
+        }
+    }
+    if(jackpot > 0) {
+      owner.send(jackpot);
+      jackpot = 0;
     }
   }
 
-  function returnPrinciple() principleMissed {
-      initialInvestor.send(principle);
-  }
-
-  function payOut() ballotSatisfied {
-    for(int i = 0; i < shares.length; i++) {
-      if(sharesOwned[shares[i].owner] > 0) {
-        uint shareCount = sharesOwned[shares[i].owner];
-        sharesOwned[shares[i].owner] = 0;
-        shares[i].owner.send(jackpot * (shareCount / shares.length));
-      }
-    }
-  }
-
-  function() {
-    throw;
+  modifier require(bool _cond) {
+    if(!_cond) throw;
+    _;
   }
 }
