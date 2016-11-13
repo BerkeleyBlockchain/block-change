@@ -13,7 +13,6 @@ contract BlockChange {
   uint ratioToShares;
   bool satisfied = false;
 
-
   function BlockChange(bytes32 _name, uint _ratioToShares, uint _cycleLength, uint _initWait){
     name = _name;
     cycleLength = _cycleLength;
