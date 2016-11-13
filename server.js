@@ -9,7 +9,6 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var blockchain = require('./blockchain.js');
 
 var node = express()
 node.set('port', process.env.PORT || 3000);
