@@ -7,7 +7,6 @@ contract BlockChange {
   bytes32 public name;
   bytes32 public desc;
   uint public jackpot;
-  uint public sharesSold = 0;
   uint public cycleLength;
   uint public deadline;
   uint public initWait;
@@ -15,6 +14,7 @@ contract BlockChange {
   uint public shareLimit = 1000;
   bool public satisfied = false;
 
+  uint public sharesSold = 0;
   uint public shareholderCount = 0;
   mapping(uint => address) shareholderIndex;
   mapping(address => uint256) public shareholderToSharesOwned;
@@ -76,29 +76,42 @@ contract BlockChange {
     jackpot += msg.value - (orderSize * cost);
   }
 
-  /* release all current shares */
-  function releaseShares() require(now >= deadline) {
-    sharesSold = 0;
-    deadline = now + cycleLength * 1 days;
-  }
+  function eventSuccess() require(now >= deadline) {
+    if (msg.sender != owner) throw;
 
-  function payOut() require(satisfied) {
-    /* Iterate through shareholders and make txs */
+    /* Iterate through shareholders and pay out rewards */
     for(uint i = 0; i < shareholderCount; i++) {
         if (shareholderToSharesOwned[shareholderIndex[i]] > 0) {
           uint numShares = shareholderToSharesOwned[shareholderIndex[i]];
           shareholderToSharesOwned[shareholderIndex[i]] = 0;
           uint payment = numShares * jackpot / shareLimit;
-          if (!shareholderIndex[i].send(payment)) throw;
+          shareholderIndex[i].send(payment);
           jackpot -= payment;
         }
     }
 
     /* Leftover change goes to the creator of the contract */
     if (jackpot > 0) {
-      if (!owner.send(jackpot)) throw;
+      owner.send(jackpot);
       jackpot = 0;
     }
+
+    satisfied = true;
+  }
+
+  function eventFail() require(now >= deadline) {
+    if (msg.sender != owner) throw;
+
+    /* Reset everything */
+    for(uint i = 0; i < shareholderCount; i++) {
+        delete shareholderToSharesOwned[shareholderIndex[i]];
+        delete shareholderIndex[i];
+    }
+    sharesSold = 0;
+    shareholderCount = 0;
+    deadline = now + cycleLength * 1 days;
+
+    satisfied = false;
   }
 
   modifier require(bool _cond) {
