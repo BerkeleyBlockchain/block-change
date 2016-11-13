@@ -1,6 +1,4 @@
-pragma solidity ^0.4.2;
-
-contract Chainge {
+contract BlockChange {
 
   address public owner;
 
@@ -18,7 +16,7 @@ contract Chainge {
 
   mapping(address => uint256) public sharesOwned;
 
-  function Chainge(bytes32 _name, bytes32 _desc, uint _ratioToShares, uint _cycleLength, uint _initWait){
+  function BlockChange(bytes32 _name, bytes32 _desc, uint _ratioToShares, uint _cycleLength, uint _initWait){
     name = _name;
     desc = _desc;
     cycleLength = _cycleLength;

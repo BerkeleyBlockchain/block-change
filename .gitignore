@@ -4,3 +4,6 @@ data3/*
 data4/*
 data5/*
 node_modules/*
+bower_components/*
+public/js/*
+public/css/*
