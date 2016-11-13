@@ -55,7 +55,7 @@ contract Chainge {
     }
     curShareIndex += numShares;
     sharesOwned[msg.sender] += numShares;
-    msg.sender.send(msg.value - (numShares * cost));
+    if(!msg.sender.send(msg.value - (numShares * cost))) throw;
     jackpot += msg.value - (numShares * cost);
   }
 
@@ -71,12 +71,12 @@ contract Chainge {
           uint numShares = sharesOwned[shares[i]];
           sharesOwned[shares[i]] = 0;
           uint payment = numShares * jackpot / 1000;
-          shares[i].send(payment);
+          if(!shares[i].send(payment)) throw;
           jackpot -= payment;
         }
     }
     if(jackpot > 0) {
-      owner.send(jackpot);
+      if(!owner.send(jackpot)) throw;
       jackpot = 0;
     }
   }
