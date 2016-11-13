@@ -54,7 +54,7 @@ class App extends React.Component {
         return (
             <div>
                 <Navbar history={this.props.history} blocks={this.state.blocks} searchSubmit={this.searchSubmit.bind(this)} goHome={this.goHome.bind(this)} />
-                <div>{React.cloneElement(this.props.children, { blocks: this.state.blocks, treeData:this.state.treeData, setActiveKey:this.setActiveKey, web3:web3, contractSource:this.state.contractSource, activeKey:this.state.activeKey, handleNewProposal:this.handleNewProposal.bind(this), searchSubmit:this.searchSubmit.bind(this)})}</div>
+                <div>{React.cloneElement(this.props.children, { blocks: this.state.blocks, treeData:this.state.treeData, setActiveKey:this.setActiveKey, web3:web3, contractSource:this.state.contractSource,parentSource:this.state.parentSource, activeKey:this.state.activeKey, handleNewProposal:this.handleNewProposal.bind(this), searchSubmit:this.searchSubmit.bind(this)})}</div>
                 <Footer peers={this.state.peers} />
             </div>
         );

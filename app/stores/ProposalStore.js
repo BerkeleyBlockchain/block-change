@@ -16,6 +16,9 @@ class ProposalStore {
         this.proposalSatisfied;
         this.proposalShareValueToJackpotRatio;
         this.proposalShareholderCount;
+        this.proposalCostOfShare;
+
+        this.block;
 
         this.donationAddress;
         this.donationAmount;
@@ -54,6 +57,7 @@ class ProposalStore {
     onGotContract(payload) {
 		this.proposalAddress = payload.proposalAddress;
 		this.proposalName = payload.name;
+        this.block = payload.block;
 		this.proposalDescription = payload.description;
 		this.proposalJackpot = payload.block.jackpot().toNumber();
 		this.proposalDeadline = payload.block.deadline().toNumber();
@@ -64,6 +68,7 @@ class ProposalStore {
         this.proposalSatisfied = payload.block.satisfied();
         this.proposalShareValueToJackpotRatio = payload.block.ratioOfTotalShareValueToJackpot().toNumber();
         this.proposalShareholderCount = payload.block.shareholderCount().toNumber();
+        this.proposalCostOfShare = this.proposalJackpot * this.proposalShareValueToJackpotRatio / (100 * 1000);
         console.log(this);
     }
 }

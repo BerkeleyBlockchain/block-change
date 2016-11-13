@@ -27,11 +27,11 @@ class Proposal extends React.Component {
     }
 
     donate(){
-        ProposalActions.donateToProposal(this.state.donationAddress, this.state.donationAmount, this.state.proposalAddress, this.props.web3, this.props.contractSource);
+        ProposalActions.donateToProposal(this.state.donationAddress, this.state.donationAmount, this.state.proposalAddress, this.props.web3, this.props.contractSource, this.state.block);
     }
 
     buyShares(){
-        ProposalActions.buySharesOfProposal(this.state.buyAddress, this.state.buyAmount, this.state.proposalAddress, this.props.web3, this.props.contractSource);
+        ProposalActions.buySharesOfProposal(this.state.buyAddress, this.state.buyAmount, this.state.proposalAddress, this.props.web3, this.props.contractSource, this.state.block);
     }
 
     render() {
@@ -73,7 +73,7 @@ class Proposal extends React.Component {
                     </Col>
 
                     <Col sm={6}>
-                        <Panel header="Buy Shares">
+                        <Panel header={"Buy Share (" + this.state.proposalCostOfShare +" Eth)"}>
                             <div>
                                 <form onSubmit={this.buyShares.bind(this)}>
                                     <div className={'form-group ' + this.state.buyValidationState}>

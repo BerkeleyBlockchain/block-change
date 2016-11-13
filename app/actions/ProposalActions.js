@@ -25,11 +25,12 @@ class ProposalActions {
 
     donateToProposal(donationAddress, donationAmount, proposalAddress, web3, source) {
     	var compiled = web3.eth.compile.solidity(source);
-		var BlockChange = web3.eth.contract(compiled.info.abiDefinition);
+        var BlockChange = web3.eth.contract(compiled.info.abiDefinition);
 
-		var block = BlockChange.at(proposalAddress);
+        var block = BlockChange.at(proposalAddress);
 
-		block.fundraise.sendTransaction({'from':donationAddress, 'value':web3.toWei(parseInt(donationAmount), 'ether')});
+		var hash = block.fundraise.sendTransaction({'from':donationAddress, 'value':web3.toWei(parseInt(donationAmount), 'ether')});
+        console.log(hash);
     }
 
     buyShares(buyAddress, buyAmount, proposalAddress, web3, source) {
