@@ -12,10 +12,9 @@ contract contractGenerator {
         bytes32 _desc,
         uint _ratioOfTotalShareValueToJackpot,
         uint _cycleLength,
-        uint _initWait
     ) {
       blockchangeIndex[contractCount++] = new BlockChange(_name, _desc,
-        _ratioOfTotalShareValueToJackpot, _cycleLength, _initWait);
+        _ratioOfTotalShareValueToJackpot, _cycleLength);
   }
 
 }
@@ -29,7 +28,6 @@ contract BlockChange {
   uint public jackpot;
   uint public cycleLength;
   uint public deadline;
-  uint public initWait;
   uint public ratioOfTotalShareValueToJackpot;
   uint public shareLimit = 1000;
   bool public satisfied = false;
@@ -44,13 +42,11 @@ contract BlockChange {
       bytes32 _desc,
       uint _ratioOfTotalShareValueToJackpot,
       uint _cycleLength,
-      uint _initWait
   ) {
     name = _name;
     desc = _desc;
     cycleLength = _cycleLength;
     deadline = now + cycleLength * 1 days;
-    initWait = now + _initWait * 1 days;
     ratioOfTotalShareValueToJackpot = _ratioOfTotalShareValueToJackpot;
   }
 
@@ -67,7 +63,7 @@ contract BlockChange {
   }
 
   /* purchase a share */
-  function purchase() require(now >= initWait) payable {
+  function purchase()  payable
     uint cost = costOfShare();
     if (msg.value < cost) throw;
     uint orderSize = msg.value / cost;
