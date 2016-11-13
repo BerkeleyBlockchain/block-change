@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 contract BlockChange {
 
   address public owner;
