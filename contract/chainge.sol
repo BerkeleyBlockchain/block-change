@@ -19,16 +19,19 @@ contract Chainge {
 
 contract Ballot{
   struct Share {
-    uint public costInEther,
-    address owner;
+    uint public costInEther;
   }
-
+  struct User{
+    Share[] shares,
+    address addr,
+    uint donation;
+  }
 
 
     bytes32 name,
     bytes32 desc,
     bool satisfied,
-    Share[] shares,
+    User[] users,
     uint jackpot,
     bool isReturnable;
     mapping(address => uint256) public userSpace;
@@ -48,12 +51,13 @@ contract Ballot{
     jackpot = 0;
     satisfied = false;
   }
-  function returnPrinciple() principleMissed {
-    for(int i = 0; i <shares.length; i++) {
-      address user = shares[i].owner;
-      user.send(sha)
-    }
 
+  function buyShare()
+  function returnPrinciple() principleMissed {
+    for(int i = 0; i <users.length; i++) {
+      address user = users[i].addr;
+      user.send(users[i].donation);
+    }
   }
 
   function payOut() ballotSatisfied {
