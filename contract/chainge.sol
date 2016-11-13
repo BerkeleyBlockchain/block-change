@@ -107,7 +107,7 @@ contract Ballot {
     }
   }
 
-  function payOut() ballotSatisfied {
+  function payOut() ballotSatisfied { //why does the payout send money to the owners of the share. Shouldn't it send it to the maker of the ballot?
     for(int i = 0; i < shares.length; i++) {
       if(sharesOwned[shares[i].owner] > 0) {
         uint shareCount = sharesOwned[shares[i].owner];
