@@ -11,7 +11,7 @@ contract contractGenerator {
         bytes32 _name,
         bytes32 _desc,
         uint _ratioOfTotalShareValueToJackpot,
-        uint _cycleLength,
+        uint _cycleLength
     ) {
       blockchangeIndex[contractCount++] = new BlockChange(_name, _desc,
         _ratioOfTotalShareValueToJackpot, _cycleLength);
@@ -41,7 +41,7 @@ contract BlockChange {
       bytes32 _name,
       bytes32 _desc,
       uint _ratioOfTotalShareValueToJackpot,
-      uint _cycleLength,
+      uint _cycleLength
   ) {
     name = _name;
     desc = _desc;
@@ -63,7 +63,7 @@ contract BlockChange {
   }
 
   /* purchase a share */
-  function purchase()  payable
+  function purchase()  payable {
     uint cost = costOfShare();
     if (msg.value < cost) throw;
     uint orderSize = msg.value / cost;
@@ -92,6 +92,7 @@ contract BlockChange {
 
   function eventSuccess() require(now >= deadline) {
     if (msg.sender != owner) throw;
+    bool result = false;
 
     /* Iterate through shareholders and pay out rewards */
     for(uint i = 0; i < shareholderCount; i++) {
@@ -99,14 +100,14 @@ contract BlockChange {
           uint numShares = shareholderToSharesOwned[shareholderIndex[i]];
           shareholderToSharesOwned[shareholderIndex[i]] = 0;
           uint payment = numShares * jackpot / shareLimit;
-          var result = shareholderIndex[i].send(payment);
+          result = shareholderIndex[i].send(payment);
           jackpot -= payment;
         }
     }
 
     /* Leftover change goes to the creator of the contract */
     if (jackpot > 0) {
-      bool result = owner.send(jackpot);
+      result = owner.send(jackpot);
       jackpot = 0;
     }
 
