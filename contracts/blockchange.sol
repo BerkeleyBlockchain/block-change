@@ -41,11 +41,11 @@ contract BlockChange {
     return cost;
   }
 
-  modifier initialPeriod() { if (now >= initWait) _; }
+  modifier initialPeriod() { if (now <= initWait) _; }
 
   /* add money to initial amount */
   function fundraise() initialPeriod payable {
-    jackpot += msg.value;
+    jackpot = jackpot + msg.value;
   }
 
   /* purchase a share */
@@ -65,7 +65,7 @@ contract BlockChange {
     if (shareholderToSharesOwned[msg.sender] == 0) {
       shareholderIndex[shareholderCount] = msg.sender;
       shareholderToSharesOwned[msg.sender] = orderSize;
-      shareholderCount += 1;
+      shareholderCount = shareholderCount + 1;
     } else {
       shareholderToSharesOwned[msg.sender] += orderSize;
     }
