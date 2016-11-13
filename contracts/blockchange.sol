@@ -40,11 +40,9 @@ contract BlockChange {
     uint cost = jackpot * ratioOfTotalShareValueToJackpot / (100 * shareLimit);
     return cost;
   }
-
-  modifier initialPeriod() { if (now >= initWait) _; }
-
+  
   /* add money to initial amount */
-  function fundraise() initialPeriod payable {
+  function fundraise() require(initWait > now) payable {
     jackpot += msg.value;
   }
 
@@ -53,7 +51,7 @@ contract BlockChange {
     uint cost = costOfShare();
     if (msg.value < cost) throw;
     uint orderSize = msg.value / cost;
-    
+
     /* Cannot buy more than the number of shares that are left */
     uint sharesLeft = shareLimit - sharesSold;
     if (orderSize > (sharesLeft - 1)) {
