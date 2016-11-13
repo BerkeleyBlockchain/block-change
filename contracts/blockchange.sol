@@ -40,9 +40,9 @@ contract BlockChange {
     uint cost = jackpot * ratioOfTotalShareValueToJackpot / (100 * shareLimit);
     return cost;
   }
-  
+
   /* add money to initial amount */
-  function fundraise() require(initWait > now) payable {
+  function fundraise() payable {
     jackpot += msg.value;
   }
 
