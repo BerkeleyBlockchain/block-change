@@ -38,7 +38,7 @@ contract Chainge {
   modifier initalPeriod() { if(now >= initWait) _; }
 
   // add money to initial amount
-  function fundraise() initalPeriod require(msg.sender == owner) {
+  function fundraise() initalPeriod {
     jackpot += msg.value;
   }
 
