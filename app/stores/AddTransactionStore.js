@@ -6,9 +6,9 @@ class AddTransactionStore {
         this.bindActions(AddTransactionActions);
         this.name = '';
         this.description = '';
-        this.raiseTime = 0;
-        this.sharePercentage = 0;
-        this.numShares = 0;
+        this.raiseTime;
+        this.sharePercentage;
+        this.cycleTime;
         this.helpBlock = '';
         this.txValidationState = '';
     }
@@ -36,19 +36,19 @@ class AddTransactionStore {
     }
 
     onUpdateRaiseTime(event) {
-        this.raiseTime = parseInt(event.target.value);
+        this.raiseTime = event.target.value;
         this.txValidationState = '';
         this.helpBlock = '';
     }
 
     onUpdateSharePercentage(event) {
-        this.sharePercentage = parseInt(event.target.value);
+        this.sharePercentage = event.target.value;
         this.txValidationState = '';
         this.helpBlock = '';
     }
 
-    onUpdateNumShares(event) {
-        this.numShares = parseInt(event.target.value);
+    onUpdateCycleTime(event) {
+        this.cycleTime = event.target.value;
         this.txValidationState = '';
         this.helpBlock = '';
     }
