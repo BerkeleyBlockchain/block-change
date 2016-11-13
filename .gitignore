@@ -1,3 +1,4 @@
+morden/*
 data/*
 data2/*
 data3/*
@@ -7,3 +8,4 @@ node_modules/*
 bower_components/*
 public/js/*
 public/css/*
+*.swp
