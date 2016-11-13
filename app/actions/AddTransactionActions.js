@@ -10,7 +10,7 @@ class AddTransactionActions {
             'updateDescription',
             'updateRaiseTime',
             'updateSharePercentage',
-            'updateNumShares',
+            'updateCycleTime',
             'invalidPercentage',
             'invalidTx',
             'invalidPayload'

@@ -36,23 +36,35 @@ class AppActions {
     }
 
     newProposal(payload, web3, contractSource) {
-        var contractCompiled = web3.eth.compile.solidity(contractSource);
+        var _name = payload.name ;
+        var _desc = payload.description ;
+        var _ratioToShares = payload.sharePercentage ;
+        var _cycleLength = payload.cycleTime;
+        var _initWait = payload.raiseTime;
 
+        var compiled = web3.eth.compile.solidity(contractSource);
+        console.log(compiled);
+        var code = compiled.code;
+        var abi = compiled.info.abiDefinition;
 
-        var blocChangeContract = web3.eth.contract(contractCompiled.BlockChange.info.abiDefinition);
-        var BlockChange = blockChangeContract.new({from:web3.eth.accounts[0], data: contractCompiled.BlockChange.code, gas: 1000000}, 
-          function(e, contract) {
-            if (!e) {
-              if(!contract.address) {
-                console.log("Contract transaction send: TransactionHash: " + 
-                  contract.transactionHash + " waiting to be mined...");
-              } else {
-                console.log("Contract mined! Address: " + contract.address);
-                console.log(contract);
-              }
+        var blockchangeContract = web3.eth.contract(abi);
+        var blockchange = blockchangeContract.new(
+           _name,
+           _desc,
+           _ratioToShares,
+           _cycleLength,
+           _initWait,
+           {
+             from: web3.eth.accounts[0], 
+             data: code, 
+             gas: 3000000
+           }, function(e, contract){
+            console.log(e, contract);
+            if (typeof contract.address != 'undefined') {
+                 console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
             }
-          }
-        )
+         })
+
     }
 
 }

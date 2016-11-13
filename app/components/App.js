@@ -6,21 +6,19 @@ import AppActions from '../actions/AppActions';
 import { withRouter } from 'react-router';
 import Web3 from 'web3';
 
-var web3 = new Web3();
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 class App extends React.Component {
     constructor(props) {
         super(props);
-        web3.setProvider(new web3.providers.HttpProvider("http://localhost:8545"));
-        console.log(web3);
         this.state = AppStore.getState();
         this.onChange = this.onChange.bind(this);
     }
 
     componentDidMount() {
         AppStore.listen(this.onChange);
-        AppActions.getPeers();
-        AppActions.getChain();
+        //AppActions.getPeers();
+        //AppActions.getChain();
     }
 
     componentWillUnmount() {
@@ -45,17 +43,18 @@ class App extends React.Component {
 
     handleNewProposal(payload) {
         console.log(payload);
+        console.log(web3);
         AppActions.newProposal(payload, web3, this.state.contractSource);
     }
 
 
     render() {
-
+        console.log(web3);
 
         return (
             <div>
                 <Navbar history={this.props.history} blocks={this.state.blocks} searchSubmit={this.searchSubmit.bind(this)} goHome={this.goHome.bind(this)} />
-                <div>{React.cloneElement(this.props.children, { blocks: this.state.blocks, treeData:this.state.treeData, setActiveKey:this.setActiveKey, activeKey:this.state.activeKey, handleNewProposal:this.handleNewProposal.bind(this), searchSubmit:this.searchSubmit.bind(this)})}</div>
+                <div>{React.cloneElement(this.props.children, { blocks: this.state.blocks, treeData:this.state.treeData, setActiveKey:this.setActiveKey, web3:web3, contractSource:this.state.contractSource, activeKey:this.state.activeKey, handleNewProposal:this.handleNewProposal.bind(this), searchSubmit:this.searchSubmit.bind(this)})}</div>
                 <Footer peers={this.state.peers} />
             </div>
         );

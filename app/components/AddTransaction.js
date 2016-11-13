@@ -26,7 +26,7 @@ class AddTransaction extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        if(!this.state.name || !this.state.description || !this.state.raiseTime || !this.state.sharePercentage || !this.state.numShares) {
+        if(!this.state.name || !this.state.description || !this.state.raiseTime || !this.state.sharePercentage || !this.state.cycleTime) {
             AddTransactionActions.invalidTx();
             this.refs.nameTextField.focus();
         } else if (this.state.sharePercentage < 1) {
@@ -36,9 +36,9 @@ class AddTransaction extends React.Component {
             var payload = {
                 name: this.state.name,
                 description: this.state.description,
-                raiseTime: this.state.raiseTime,
-                sharePercentage: this.state.sharePercentage,
-                numShares: this.state.numShares
+                raiseTime: parseInt(this.state.raiseTime),
+                sharePercentage: parseInt(this.state.sharePercentage),
+                cycleTime: parseInt(this.state.cycleTime)
             }
             this.props.handleNewProposal(payload);
         }
@@ -70,9 +70,9 @@ class AddTransaction extends React.Component {
                                     <Textarea type='text' maxRows={10} className='form-control' ref='sharePercentageTextField' value={this.state.sharePercentage}
                                        onChange={AddTransactionActions.updateSharePercentage} autoFocus/>
                                        
-                                    <label className='control-label'>Num of shares to issue</label>                                   
-                                    <Textarea type='text' maxRows={10} className='form-control' ref='numSharesTextField' value={this.state.numShares}
-                                       onChange={AddTransactionActions.updateNumShares} autoFocus/>   
+                                    <label className='control-label'>Cycle Time</label>                                   
+                                    <Textarea type='text' maxRows={10} className='form-control' ref='cycleTimeTextField' value={this.state.cycleTime}
+                                       onChange={AddTransactionActions.updateCycleTime} autoFocus/>   
 
                                     <span className='help-block'>{this.state.helpBlock}</span>
                                 </div>

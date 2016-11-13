@@ -45,8 +45,6 @@ class Home extends React.Component {
     
 
     render() {
-
-        console.log(this.props);
         var blocks = this.props.blocks;
         if (!this.state.sortDown){
             blocks = blocks.slice().reverse();
