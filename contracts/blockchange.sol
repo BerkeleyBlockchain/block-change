@@ -11,35 +11,26 @@ contract BlockChange {
   uint cycleLength;
   uint deadline;
   uint initWait;
-  uint totalShareValueToJackpotRatio;
+  uint ratioToShares;
   uint shareLimit = 1000;
   bool satisfied = false;
 
   uint shareholderCount = 0;
-  mapping(uint => address) shareholderIndex;
-  mapping(address => uint256) shareholderToSharesOwned;
+  mapping(uint => address) public shareholderIndex;
+  mapping(address => uint256) public shareholderToSharesOwned;
 
-  function BlockChange(
-      bytes32 _name,
-      bytes32 _desc,
-      uint _totalShareValueToJackpotRatio,
-      uint _cycleLength,
-      uint _initWait
-  ){
+  function BlockChange(bytes32 _name, bytes32 _desc, uint _ratioToShares, uint _cycleLength, uint _initWait){
     name = _name;
     desc = _desc;
     cycleLength = _cycleLength;
     deadline = now + cycleLength * 1 days;
     initWait = now + _initWait * 1 days;
-    if (totalShareValueToJackpotRatio > 100) throw;
-    if (totalShareValueToJackpotRatio < 1) throw;
-    totalShareValueToJackpotRatio = _totalShareValueToJackpotRatio;
+    ratioToShares = _ratioToShares;
   }
 
-  /* returns the cost of each share based on totalShareValueToJackpotRatio
-  and jackpot */
+  /* returns cost of share based on ratioToShares and jackpot */
   function costOfShare() returns (uint) {
-    uint cost = jackpot * totalShareValueToJackpotRatio / (100 * shareLimit);
+    uint cost = jackpot * ratioToShares / (100 * shareLimit);
     return cost;
   }
 
