@@ -1,6 +1,6 @@
 # BlockChange
 
-Sunny Aggarwal, Nihar Dalal, Kion Fallah, Max Fang, Alex Tran
+Sunny Aggarwal, Nihar Dalal, Kion Fallah, Max Fang, Alex Tran. Recipient of $1000 prize at Cal Hacks Fall 2016.
 
 ### Problems:
 
